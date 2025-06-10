@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Dungeon RPG</title>
+    <link rel="stylesheet" href="./style.css"/>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Start Menu Screen -->
+      <div id="start-menu" class="screen">
+        <div class="menu-container">
+          <div class="game-title">
+            <h1>🏰 Math Dungeon RPG</h1>
+            <p class="subtitle">Navigate the dungeon, solve math puzzles, and defeat monsters!</p>
+          </div>
+          
+          <div class="menu-buttons">
+            <button id="start-game-btn" class="menu-btn primary">⚔️ Start Adventure</button>
+            <button id="instructions-btn" class="menu-btn">📖 Instructions</button>
+            <button id="credits-btn" class="menu-btn">👑 Credits</button>
+          </div>
+          
+          <div class="menu-footer">
+            <p>Use your mathematical skills to conquer the dungeon!</p>
+            <p>Game Made by - Arin Jain</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions Screen -->
+      <div id="instructions-screen" class="screen hidden">
+        <div class="instructions-container">
+          <div class="instructions-header">
+            <h2>📖 Game Instructions</h2>
+            <button id="back-to-menu" class="close-btn">✕</button>
+          </div>
+          
+          <div class="instructions-content">
+            <div class="instruction-section">
+              <h3>🎯 Game Objective</h3>
+              <p>Navigate through a dangerous dungeon filled with mathematical challenges. Solve puzzles, defeat monsters, and collect treasures to achieve the highest score possible!</p>
+            </div>
+
+            <div class="instruction-section">
+              <h3>🎮 Controls</h3>
+              <ul>
+                <li><strong>Movement:</strong> Use arrow keys (↑↓←→) or click the movement buttons</li>
+                <li><strong>Grid Navigation:</strong> Click on adjacent cells to move there</li>
+                <li><strong>Combat:</strong> Click combat action buttons during battles</li>
+                <li><strong>Puzzles:</strong> Type your answer and press Enter or click Submit</li>
+              </ul>
+            </div>
+
+            <div class="instruction-section">
+              <h3>🏠 Room Types</h3>
+              <div class="room-types">
+                <div class="room-type">
+                  <span class="room-icon">👹</span>
+                  <div>
+                    <strong>Monster Rooms:</strong> Battle mathematical creatures using operator-based attacks. Each attack type has different damage ranges.
+                  </div>
+                </div>
+                <div class="room-type">
+                  <span class="room-icon">🚪</span>
+                  <div>
+                    <strong>Puzzle Doors:</strong> Solve math equations to unlock doors. Wrong answers cause damage, but correct answers reward points.
+                  </div>
+                </div>
+                <div class="room-type">
+                  <span class="room-icon">💎</span>
+                  <div>
+                    <strong>Treasure Rooms:</strong> Find health potions, healing crystals, and bonus points to aid your journey.
+                  </div>
+                </div>
+                <div class="room-type">
+                  <span class="room-icon">·</span>
+                  <div>
+                    <strong>Empty Rooms:</strong> Safe spaces to rest and plan your next move. Previously visited rooms appear dimmed.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="instruction-section">
+              <h3>⚔️ Combat System</h3>
+              <div class="combat-actions-guide">
+                <div class="action-guide">
+                  <strong>Attack (+):</strong> Calculated precision strike - moderate damage with consistency
+                </div>
+                <div class="action-guide">
+                  <strong>Slash (-):</strong> Mathematical fury - slightly higher damage variance
+                </div>
+                <div class="action-guide">
+                  <strong>Power (*):</strong> Multiplication attack - high damage potential with risk
+                </div>
+                <div class="action-guide">
+                  <strong>Pierce (/):</strong> Division precision - reliable damage with good accuracy
+                </div>
+                <div class="action-guide">
+                  <strong>Defend:</strong> Reduce incoming damage by half for one turn
+                </div>
+              </div>
+            </div>
+
+            <div class="instruction-section">
+              <h3>📊 Player Stats</h3>
+              <ul>
+                <li><strong>Health:</strong> Your life force. Reaches 0 = Game Over. Restored by potions and level ups.</li>
+                <li><strong>Score:</strong> Points earned from defeating monsters, solving puzzles, and finding treasures.</li>
+                <li><strong>Level:</strong> Increases every 100 points. Higher levels = more damage and health.</li>
+                <li><strong>Potions:</strong> Restore 30-50 health points. Use wisely!</li>
+              </ul>
+            </div>
+
+            <div class="instruction-section">
+              <h3>🧮 Math Challenges</h3>
+              <p>Puzzles include:</p>
+              <ul>
+                <li>Basic arithmetic (addition, subtraction, multiplication, division)</li>
+                <li>Modular arithmetic (remainder operations)</li>
+                <li>Difficulty scales with your progress</li>
+                <li>Wrong answers cause 5 HP damage</li>
+                <li>Skip option available for 10 HP cost</li>
+              </ul>
+            </div>
+
+            <div class="instruction-section">
+              <h3>💡 Strategy Tips</h3>
+              <ul>
+                <li>Explore systematically - visited rooms are marked and safe to return to</li>
+                <li>Manage your health carefully - use potions before critical battles</li>
+                <li>Level up by earning points - each level increases your combat effectiveness</li>
+                <li>Different combat actions have different damage ranges - experiment!</li>
+                <li>Defending can be crucial against strong monsters</li>
+                <li>Take time to solve puzzles correctly - the health penalty adds up</li>
+              </ul>
+            </div>
+
+            <div class="instruction-section">
+              <h3>🏆 Winning Conditions</h3>
+              <p>There's no traditional "win" condition - the goal is to achieve the highest score possible before your health reaches zero. Challenge yourself to:</p>
+              <ul>
+                <li>Reach higher levels through consistent point earning</li>
+                <li>Explore more of the dungeon safely</li>
+                <li>Master the combat system for efficient monster defeats</li>
+                <li>Solve puzzles quickly and accurately</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="instructions-footer">
+            <button id="start-from-instructions" class="menu-btn primary">🚀 Start Playing</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credits Screen -->
+      <div id="credits-screen" class="screen hidden">
+        <div class="credits-container">
+          <div class="credits-header">
+            <h2>👑 Credits</h2>
+            <button id="back-to-menu-credits" class="close-btn">✕</button>
+          </div>
+          
+          <div class="credits-content">
+            <div class="credit-section">
+              <h3>🎮 Game Design</h3>
+              <p>Arin Jain</p>
+            </div>
+            <div class="credit-section">
+              <h3>🎮 Sound Track Maker</h3>
+              <p>Arin Jain</p>
+            </div>
+            <div class="credit-section">
+              <h3>🎮 Logic Thinking</h3>
+              <p>Arin Jain</p>
+            </div>
+            <div class="credit-section">
+              <h3>🧮 Educational Focus</h3>
+              <p>Combining RPG mechanics with mathematical learning</p>
+              <ul>
+                <li>Arithmetic Operations</li>
+                <li>Problem Solving Skills</li>
+                <li>Strategic Thinking</li>
+                <li>Pattern Recognition</li>
+              </ul>
+            </div>
+            
+            <div class="credit-section">
+              <h3>🎯 Target Audience</h3>
+              <p>Students and learners who want to practice math in an engaging, game-based environment</p>
+            </div>
+            
+            <div class="credit-section">
+              <h3>💻 Technology</h3>
+              <p>Built with vanilla JavaScript, HTML5, and CSS3</p>
+            </div>
+          </div>
+          
+          <div class="credits-footer">
+            <button id="start-from-credits" class="menu-btn primary">🎮 Play Game</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="game-over-screen" class="screen hidden">
+        <div class="game-over-container">
+          <div class="game-over-header">
+            <h2>💀 Game Over</h2>
+          </div>
+          
+          <div class="game-over-content">
+            <div class="final-stats">
+              <h3>📊 Final Statistics</h3>
+              <div class="stat-row">
+                <span>Final Score:</span>
+                <span id="final-score" class="stat-value">0</span>
+              </div>
+              <div class="stat-row">
+                <span>Level Reached:</span>
+                <span id="final-level" class="stat-value">1</span>
+              </div>
+              <div class="stat-row">
+                <span>Rooms Explored:</span>
+                <span id="rooms-explored" class="stat-value">0</span>
+              </div>
+              <div class="stat-row">
+                <span>Monsters Defeated:</span>
+                <span id="monsters-defeated" class="stat-value">0</span>
+              </div>
+              <div class="stat-row">
+                <span>Puzzles Solved:</span>
+                <span id="puzzles-solved" class="stat-value">0</span>
+              </div>
+            </div>
+            
+            <div class="performance-message">
+              <h3 id="performance-title">🎯 Performance</h3>
+              <p id="performance-text">Great effort! Every adventure teaches us something new.</p>
+            </div>
+          </div>
+          
+          <div class="game-over-actions">
+            <button id="play-again-btn" class="menu-btn primary">🔄 Play Again</button>
+            <button id="back-to-main-menu" class="menu-btn">🏠 Main Menu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Game Screen -->
+      <div id="game-screen" class="screen hidden">
+        <header class="game-header">
+          <h1>🏰 Math Dungeon RPG</h1>
+          <p>Navigate the dungeon, solve math puzzles, and defeat monsters!</p>
+          <button id="pause-menu-btn" class="pause-btn">⏸️ Menu</button>
+        </header>
+
+        <div class="game-container">
+          <div class="stats-panel">
+            <div class="player-stats">
+              <h3>Player Stats</h3>
+              <div class="stat">
+                <span class="stat-label">Health:</span>
+                <div class="health-bar">
+                  <div class="health-fill" id="health-fill"></div>
+                  <span id="health-text">100/100</span>
+                </div>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Score:</span>
+                <span id="score">0</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Level:</span>
+                <span id="level">1</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Position:</span>
+                <span id="position">(0, 0)</span>
+              </div>
+            </div>
+
+            <div class="inventory">
+              <h3>Inventory</h3>
+              <div id="inventory-items">
+                <div class="item">Health Potions: <span id="potions">3</span></div>
+              </div>
+              <button id="use-potion" class="action-btn">Use Potion</button>
+            </div>
+
+            <div class="controls">
+              <h3>Controls</h3>
+              <div class="control-grid">
+                <button class="move-btn" data-direction="up">↑</button>
+                <button class="move-btn" data-direction="left">←</button>
+                <button class="move-btn" data-direction="down">↓</button>
+                <button class="move-btn" data-direction="right">→</button>
+              </div>
+              <p class="control-hint">Use arrow keys or buttons to move</p>
+            </div>
+          </div>
+
+          <div class="game-board">
+            <div id="dungeon-grid" class="dungeon-grid"></div>
+          </div>
+
+          <div class="action-panel">
+            <div id="game-log" class="game-log">
+              <h3>Game Log</h3>
+              <div id="log-content">
+                <p>Welcome to the Math Dungeon! Navigate using arrow keys.</p>
+                <p>Solve math puzzles to unlock doors and defeat monsters in combat!</p>
+              </div>
+            </div>
+
+            <div id="combat-interface" class="combat-interface hidden">
+              <h3>Combat!</h3>
+              <div class="monster-info">
+                <div id="monster-name"></div>
+                <div class="monster-health-bar">
+                  <div id="monster-health-fill" class="health-fill"></div>
+                  <span id="monster-health-text"></span>
+                </div>
+              </div>
+              <div class="combat-actions">
+                <button class="combat-btn" data-action="add">Attack (+)</button>
+                <button class="combat-btn" data-action="subtract">Slash (-)</button>
+                <button class="combat-btn" data-action="multiply">Power (*)</button>
+                <button class="combat-btn" data-action="divide">Pierce (/)</button>
+                <button class="combat-btn" data-action="defend">Defend</button>
+              </div>
+            </div>
+
+            <div id="puzzle-interface" class="puzzle-interface hidden">
+              <h3>Math Puzzle Door</h3>
+              <div id="puzzle-question"></div>
+              <input type="number" id="puzzle-answer" placeholder="Enter your answer...">
+              <button id="submit-answer" class="action-btn">Submit Answer</button>
+              <button id="skip-puzzle" class="action-btn secondary">Skip (Cost: 10 HP)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pause Menu Overlay -->
+      <div id="pause-overlay" class="overlay hidden">
+        <div class="pause-menu">
+          <h3>⏸️ Game Paused</h3>
+          <div class="pause-actions">
+            <button id="resume-game" class="menu-btn primary">▶️ Resume</button>
+            <button id="restart-game" class="menu-btn">🔄 Restart</button>
+            <button id="quit-to-menu" class="menu-btn">🏠 Main Menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
