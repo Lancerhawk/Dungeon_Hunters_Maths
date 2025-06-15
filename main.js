@@ -1,4 +1,3 @@
-
 function showTransitionSpinner() {
   const spinner = document.getElementById('transition-loading-spinner');
   if (spinner) spinner.classList.add('active');
@@ -31,12 +30,6 @@ const audioManager = {
       this.preloadAudio(this.gameOverMusic)
     ]).then(() => {
       this.audioLoaded = true;
-      document.addEventListener('click', () => {
-        if (this.bgm.paused) {
-          this.bgm.play();
-          this.fadeIn(this.bgm);
-        }
-      }, { once: true });
     });
   },
 
@@ -46,18 +39,32 @@ const audioManager = {
     
     muteButton.addEventListener('click', () => {
       this.isMuted = !this.isMuted;
-      
+      clearInterval(this.fadeInterval); // Stop any ongoing fades immediately
+
       if (this.isMuted) {
-        this.previousVolume = this.bgm.volume;
+        // Muting: store current volume, set to 0, and pause
+        this.previousVolume = this.bgm.volume > 0 ? this.bgm.volume : this.gameOverMusic.volume > 0 ? this.gameOverMusic.volume : 0.5; // Capture the actual playing volume
         this.bgm.volume = 0;
         this.gameOverMusic.volume = 0;
+        this.bgm.pause();
+        this.gameOverMusic.pause();
         muteIcon.textContent = '🔇';
         muteButton.classList.add('muted');
       } else {
-        this.bgm.volume = this.previousVolume;
-        this.gameOverMusic.volume = this.previousVolume;
+        // Unmuting: restore volume and play the currently relevant track
         muteIcon.textContent = '🔊';
         muteButton.classList.remove('muted');
+
+        // Check which screen is active to determine which music to resume
+        if (window.screenManager.currentScreen === 'game-screen') {
+            this.bgm.volume = 0; // Start fade in from 0 if it was paused
+            this.bgm.play();
+            this.fadeIn(this.bgm);
+        } else if (window.screenManager.currentScreen === 'game-over-screen') {
+            this.gameOverMusic.volume = 0; // Start fade in from 0 if it was paused
+            this.gameOverMusic.play();
+            this.fadeIn(this.gameOverMusic);
+        }
       }
     });
   },
@@ -142,6 +149,10 @@ class ScreenManager {
       await new Promise(r => setTimeout(r, 900));
       this.showScreen('game-screen');
       hideTransitionSpinner();
+      if (audioManager.bgm.paused) {
+        audioManager.bgm.play();
+        audioManager.fadeIn(audioManager.bgm);
+      }
       if (window.gameInstance) {
         window.gameInstance.startNewGame();
       } else {
@@ -602,7 +613,10 @@ class GameState {
   }
 
   submitPuzzleAnswer() {
-    const userAnswer = parseInt(document.getElementById('puzzle-answer').value);
+    // Get input from either desktop or mobile version
+    const desktopInput = document.getElementById('puzzle-answer');
+    const mobileInput = document.querySelector('#mobile-bottom-combat #puzzle-answer');
+    const userAnswer = parseInt((mobileInput || desktopInput).value);
     
     if (userAnswer === this.currentPuzzle.answer) {
       this.solvePuzzle();
@@ -805,7 +819,37 @@ class GameState {
     while (logContent.children.length > 10) {
       logContent.removeChild(logContent.lastChild);
     }
+
+    // Show temporary notification if right sidebar is closed
+    const rightSidebar = document.getElementById('mobile-right-sidebar');
+    if (rightSidebar && rightSidebar.classList.contains('hidden')) {
+      // Clear any existing notification timeout
+      if (this.notificationTimeout) {
+        clearTimeout(this.notificationTimeout);
+      }
+      this.showTemporaryNotification(message);
+    }
+
     this.updateMobilePanels();
+  }
+
+  showTemporaryNotification(message) {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('game-notification');
+    if (!notification) {
+      notification = document.createElement('div');
+      notification.id = 'game-notification';
+      document.body.appendChild(notification);
+    }
+
+    // Set the message and show the notification
+    notification.textContent = message;
+    notification.classList.add('active');
+
+    // Remove the notification after 6 seconds
+    this.notificationTimeout = setTimeout(() => {
+      notification.classList.remove('active');
+    }, 6000);
   }
 
   updateMobilePanels() {
@@ -834,9 +878,30 @@ class GameState {
     const puzzle = document.getElementById('puzzle-interface');
     const bottomControls = document.getElementById('mobile-bottom-controls');
     const bottomCombat = document.getElementById('mobile-bottom-combat');
+    
     if (controls && bottomControls) {
-      bottomControls.innerHTML = controls.outerHTML;
+      // Create a container for controls and health bar
+      const controlsContainer = document.createElement('div');
+      controlsContainer.className = 'mobile-controls-container';
+      
+      // Add controls
+      controlsContainer.appendChild(controls.cloneNode(true));
+      
+      // Add health bar
+      const healthBarContainer = document.createElement('div');
+      healthBarContainer.className = 'mobile-health-bar-container';
+      healthBarContainer.innerHTML = `
+        <div class="health-bar">
+          <div id="mobile-health-fill" class="health-fill" style="width: ${(this.player.health / this.player.maxHealth) * 100}%"></div>
+        </div>
+        <div id="mobile-health-text" class="health-text">${this.player.health}/${this.player.maxHealth}</div>
+      `;
+      controlsContainer.appendChild(healthBarContainer);
+      
+      bottomControls.innerHTML = '';
+      bottomControls.appendChild(controlsContainer);
     }
+    
     if (bottomCombat) {
       if (combat && !combat.classList.contains('hidden')) {
         bottomCombat.innerHTML = combat.outerHTML;
