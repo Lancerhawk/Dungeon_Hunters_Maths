@@ -2,18 +2,41 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./Assets/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Math Dungeon RPG</title>
+    <title>Math Dungeon RPG!</title>
     <link rel="stylesheet" href="./style.css"/>
   </head>
   <body>
     <div id="app">
+      <audio id="bgm" loop>
+        <source src="./Assets/Pixel Dungeon Dreams.mp3" type="audio/mpeg">
+      </audio>
+      <audio id="game-over-music">
+        <source src="./Assets/Game Over Groove.mp3" type="audio/mpeg">
+      </audio>
+
+      <div id="loading-screen">
+        <div class="loading-lines">
+          <div class="line line1"></div>
+          <div class="line line2"></div>
+          <div class="line line3"></div>
+          <div class="line line4"></div>
+          <div class="line line5"></div>
+        </div>
+        <div class="loading-text">
+          <span class="loading-main">Loading…</span>
+          <span class="loading-welcome">Welcome to Math Dungeon RPG!</span>
+          <span class="loading-sub">Sharpen your mind. Prepare for adventure!</span>
+        </div>
+      </div>
+      <div id="transition-loading-spinner"><div class="spinner"></div></div>
+
       <!-- Start Menu Screen -->
       <div id="start-menu" class="screen">
         <div class="menu-container">
           <div class="game-title">
-            <h1>🏰 Math Dungeon RPG</h1>
+            <h1>Math Dungeon RPG!</h1>
             <p class="subtitle">Navigate the dungeon, solve math puzzles, and defeat monsters!</p>
           </div>
           
@@ -34,13 +57,13 @@
       <div id="instructions-screen" class="screen hidden">
         <div class="instructions-container">
           <div class="instructions-header">
-            <h2>📖 Game Instructions</h2>
+            <h2 class="game-instruction">Game Instructions</h2>
             <button id="back-to-menu" class="close-btn">✕</button>
           </div>
           
           <div class="instructions-content">
             <div class="instruction-section">
-              <h3>🎯 Game Objective</h3>
+              <h3>Game Objective</h3>
               <p>Navigate through a dangerous dungeon filled with mathematical challenges. Solve puzzles, defeat monsters, and collect treasures to achieve the highest score possible!</p>
             </div>
 
@@ -55,7 +78,7 @@
             </div>
 
             <div class="instruction-section">
-              <h3>🏠 Room Types</h3>
+              <h3>Room Types</h3>
               <div class="room-types">
                 <div class="room-type">
                   <span class="room-icon">👹</span>
@@ -106,7 +129,7 @@
             </div>
 
             <div class="instruction-section">
-              <h3>📊 Player Stats</h3>
+              <h3>Player Stats</h3>
               <ul>
                 <li><strong>Health:</strong> Your life force. Reaches 0 = Game Over. Restored by potions and level ups.</li>
                 <li><strong>Score:</strong> Points earned from defeating monsters, solving puzzles, and finding treasures.</li>
@@ -116,7 +139,7 @@
             </div>
 
             <div class="instruction-section">
-              <h3>🧮 Math Challenges</h3>
+              <h3>Math Challenges</h3>
               <p>Puzzles include:</p>
               <ul>
                 <li>Basic arithmetic (addition, subtraction, multiplication, division)</li>
@@ -128,7 +151,7 @@
             </div>
 
             <div class="instruction-section">
-              <h3>💡 Strategy Tips</h3>
+              <h3>Strategy Tips</h3>
               <ul>
                 <li>Explore systematically - visited rooms are marked and safe to return to</li>
                 <li>Manage your health carefully - use potions before critical battles</li>
@@ -140,7 +163,7 @@
             </div>
 
             <div class="instruction-section">
-              <h3>🏆 Winning Conditions</h3>
+              <h3>Winning Conditions</h3>
               <p>There's no traditional "win" condition - the goal is to achieve the highest score possible before your health reaches zero. Challenge yourself to:</p>
               <ul>
                 <li>Reach higher levels through consistent point earning</li>
@@ -152,7 +175,7 @@
           </div>
           
           <div class="instructions-footer">
-            <button id="start-from-instructions" class="menu-btn primary">🚀 Start Playing</button>
+            <button id="start-from-instructions" class="menu-btn primary">Start Playing</button>
           </div>
         </div>
       </div>
@@ -161,25 +184,25 @@
       <div id="credits-screen" class="screen hidden">
         <div class="credits-container">
           <div class="credits-header">
-            <h2>👑 Credits</h2>
+            <h2>Credits</h2>
             <button id="back-to-menu-credits" class="close-btn">✕</button>
           </div>
           
           <div class="credits-content">
             <div class="credit-section">
-              <h3>🎮 Game Design</h3>
+              <h3>Game Design</h3>
               <p>Arin Jain</p>
             </div>
             <div class="credit-section">
-              <h3>🎮 Sound Track Maker</h3>
+              <h3>Sound Track Maker</h3>
               <p>Arin Jain</p>
             </div>
             <div class="credit-section">
-              <h3>🎮 Logic Thinking</h3>
+              <h3>Logic Thinking</h3>
               <p>Arin Jain</p>
             </div>
             <div class="credit-section">
-              <h3>🧮 Educational Focus</h3>
+              <h3>Educational Focus</h3>
               <p>Combining RPG mechanics with mathematical learning</p>
               <ul>
                 <li>Arithmetic Operations</li>
@@ -190,18 +213,18 @@
             </div>
             
             <div class="credit-section">
-              <h3>🎯 Target Audience</h3>
+              <h3>Target Audience</h3>
               <p>Students and learners who want to practice math in an engaging, game-based environment</p>
             </div>
             
             <div class="credit-section">
-              <h3>💻 Technology</h3>
+              <h3>Technology</h3>
               <p>Built with vanilla JavaScript, HTML5, and CSS3</p>
             </div>
           </div>
           
           <div class="credits-footer">
-            <button id="start-from-credits" class="menu-btn primary">🎮 Play Game</button>
+            <button id="start-from-credits" class="menu-btn primary">Play Game</button>
           </div>
         </div>
       </div>
@@ -245,8 +268,8 @@
           </div>
           
           <div class="game-over-actions">
-            <button id="play-again-btn" class="menu-btn primary">🔄 Play Again</button>
-            <button id="back-to-main-menu" class="menu-btn">🏠 Main Menu</button>
+            <button id="play-again-btn" class="menu-btn primary">Play Again</button>
+            <button id="back-to-main-menu" class="menu-btn">Main Menu</button>
           </div>
         </div>
       </div>
@@ -254,10 +277,10 @@
       <!-- Main Game Screen -->
       <div id="game-screen" class="screen hidden">
         <header class="game-header">
-          <h1>🏰 Math Dungeon RPG</h1>
+          <h1>Math Dungeon RPG</h1>
           <p>Navigate the dungeon, solve math puzzles, and defeat monsters!</p>
-          <button id="pause-menu-btn" class="pause-btn">⏸️ Menu</button>
         </header>
+        <button id="pause-menu-btn" class="pause-btn">Menu</button>
 
         <div class="game-container">
           <div class="stats-panel">
@@ -344,21 +367,44 @@
             </div>
           </div>
         </div>
+
+        <!-- Sidebar toggle buttons for mobile/tablet -->
+        <button id="toggle-left-sidebar" class="sidebar-toggle left">☰</button>
+        <button id="toggle-right-sidebar" class="sidebar-toggle right">☰</button>
+
+        <!-- Left Sidebar (player stats + inventory) -->
+        <div id="mobile-left-sidebar" class="mobile-sidebar left hidden">
+          <div id="mobile-left-sidebar-content"></div>
+        </div>
+        <!-- Right Sidebar (game log) -->
+        <div id="mobile-right-sidebar" class="mobile-sidebar right hidden">
+          <div id="mobile-right-sidebar-content"></div>
+        </div>
+        <!-- Floating bottom panel for controls and combat/quiz -->
+        <div id="mobile-bottom-panel" class="mobile-bottom-panel hidden">
+          <div class="mobile-bottom-section" id="mobile-bottom-controls"></div>
+          <div class="mobile-bottom-section" id="mobile-bottom-combat"></div>
+        </div>
       </div>
 
       <!-- Pause Menu Overlay -->
       <div id="pause-overlay" class="overlay hidden">
         <div class="pause-menu">
-          <h3>⏸️ Game Paused</h3>
+          <h3>Game Paused</h3>
           <div class="pause-actions">
-            <button id="resume-game" class="menu-btn primary">▶️ Resume</button>
-            <button id="restart-game" class="menu-btn">🔄 Restart</button>
-            <button id="quit-to-menu" class="menu-btn">🏠 Main Menu</button>
+            <button id="resume-game" class="menu-btn primary">Resume</button>
+            <button id="restart-game" class="menu-btn">Restart</button>
+            <button id="quit-to-menu" class="menu-btn">Main Menu</button>
           </div>
         </div>
       </div>
     </div>
 
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <!-- Mute Button -->
+    <button id="mute-button" class="mute-button" title="Toggle Music">
+      <span class="mute-icon">🔊</span>
+    </button>
     <script type="module" src="/main.js"></script>
   </body>
 </html>

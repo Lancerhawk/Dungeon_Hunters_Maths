@@ -1,4 +1,135 @@
-// Screen Management
+
+function showTransitionSpinner() {
+  const spinner = document.getElementById('transition-loading-spinner');
+  if (spinner) spinner.classList.add('active');
+}
+function hideTransitionSpinner() {
+  const spinner = document.getElementById('transition-loading-spinner');
+  if (spinner) spinner.classList.remove('active');
+}
+
+const audioManager = {
+  bgm: null,
+  gameOverMusic: null,
+  fadeInterval: null,
+  fadeDuration: 1000, 
+  audioLoaded: false,
+  isMuted: false,
+  previousVolume: 0.5,
+
+  init() {
+    this.bgm = document.getElementById('bgm');
+    this.gameOverMusic = document.getElementById('game-over-music');
+    
+    this.bgm.volume = 0;
+    this.gameOverMusic.volume = 0;
+
+    this.setupMuteButton();
+
+    return Promise.all([
+      this.preloadAudio(this.bgm),
+      this.preloadAudio(this.gameOverMusic)
+    ]).then(() => {
+      this.audioLoaded = true;
+      document.addEventListener('click', () => {
+        if (this.bgm.paused) {
+          this.bgm.play();
+          this.fadeIn(this.bgm);
+        }
+      }, { once: true });
+    });
+  },
+
+  setupMuteButton() {
+    const muteButton = document.getElementById('mute-button');
+    const muteIcon = muteButton.querySelector('.mute-icon');
+    
+    muteButton.addEventListener('click', () => {
+      this.isMuted = !this.isMuted;
+      
+      if (this.isMuted) {
+        this.previousVolume = this.bgm.volume;
+        this.bgm.volume = 0;
+        this.gameOverMusic.volume = 0;
+        muteIcon.textContent = '🔇';
+        muteButton.classList.add('muted');
+      } else {
+        this.bgm.volume = this.previousVolume;
+        this.gameOverMusic.volume = this.previousVolume;
+        muteIcon.textContent = '🔊';
+        muteButton.classList.remove('muted');
+      }
+    });
+  },
+
+  preloadAudio(audio) {
+    return new Promise((resolve, reject) => {
+      audio.addEventListener('canplaythrough', () => {
+        resolve();
+      }, { once: true });
+      
+      audio.addEventListener('error', (e) => {
+        console.error('Error loading audio:', e);
+        reject(e);
+      }, { once: true });
+
+      audio.load();
+    });
+  },
+
+  fadeIn(audio) {
+    if (this.fadeInterval) clearInterval(this.fadeInterval);
+    
+    const targetVolume = this.isMuted ? 0 : this.previousVolume;
+    const steps = 20;
+    const stepDuration = this.fadeDuration / steps;
+    const volumeStep = targetVolume / steps;
+    
+    audio.volume = 0;
+    this.fadeInterval = setInterval(() => {
+      if (audio.volume < targetVolume) {
+        audio.volume = Math.min(audio.volume + volumeStep, targetVolume);
+      } else {
+        clearInterval(this.fadeInterval);
+      }
+    }, stepDuration);
+  },
+
+  fadeOut(audio, callback) {
+    if (this.fadeInterval) clearInterval(this.fadeInterval);
+    
+    const steps = 20;
+    const stepDuration = this.fadeDuration / steps;
+    const volumeStep = audio.volume / steps;
+    
+    this.fadeInterval = setInterval(() => {
+      if (audio.volume > 0) {
+        audio.volume = Math.max(audio.volume - volumeStep, 0);
+      } else {
+        clearInterval(this.fadeInterval);
+        audio.pause();
+        if (callback) callback();
+      }
+    }, stepDuration);
+  },
+
+  switchToGameOverMusic() {
+    this.fadeOut(this.bgm, () => {
+      this.gameOverMusic.currentTime = 0;
+      this.gameOverMusic.play();
+      this.fadeIn(this.gameOverMusic);
+    });
+  },
+
+  switchToBackgroundMusic() {
+    this.fadeOut(this.gameOverMusic, () => {
+      this.bgm.currentTime = 0;
+      this.bgm.play();
+      this.fadeIn(this.bgm);
+    });
+  }
+};
+
 class ScreenManager {
   constructor() {
     this.currentScreen = 'start-menu';
@@ -6,9 +137,11 @@ class ScreenManager {
   }
 
   setupScreenTransitions() {
-    // Start menu buttons
-    document.getElementById('start-game-btn').addEventListener('click', () => {
+    document.getElementById('start-game-btn').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('game-screen');
+      hideTransitionSpinner();
       if (window.gameInstance) {
         window.gameInstance.startNewGame();
       } else {
@@ -16,26 +149,43 @@ class ScreenManager {
       }
     });
 
-    document.getElementById('instructions-btn').addEventListener('click', () => {
+    document.getElementById('instructions-btn').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('instructions-screen');
+      hideTransitionSpinner();
     });
 
-    document.getElementById('credits-btn').addEventListener('click', () => {
+    document.getElementById('credits-btn').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('credits-screen');
+      hideTransitionSpinner();
     });
 
-    // Back to menu buttons
-    document.getElementById('back-to-menu').addEventListener('click', () => {
+    document.getElementById('back-to-menu').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('start-menu');
+      hideTransitionSpinner();
+      const instructionsContent = document.querySelector('.instructions-content');
+      if (instructionsContent) instructionsContent.scrollTop = 0;
     });
 
-    document.getElementById('back-to-menu-credits').addEventListener('click', () => {
+    document.getElementById('back-to-menu-credits').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('start-menu');
+      hideTransitionSpinner();
+      const creditsContent = document.querySelector('.credits-content');
+      if (creditsContent) creditsContent.scrollTop = 0;
     });
 
-    // Start from other screens
-    document.getElementById('start-from-instructions').addEventListener('click', () => {
+    document.getElementById('start-from-instructions').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('game-screen');
+      hideTransitionSpinner();
       if (window.gameInstance) {
         window.gameInstance.startNewGame();
       } else {
@@ -43,8 +193,11 @@ class ScreenManager {
       }
     });
 
-    document.getElementById('start-from-credits').addEventListener('click', () => {
+    document.getElementById('start-from-credits').addEventListener('click', async () => {
+      showTransitionSpinner();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('game-screen');
+      hideTransitionSpinner();
       if (window.gameInstance) {
         window.gameInstance.startNewGame();
       } else {
@@ -52,17 +205,23 @@ class ScreenManager {
       }
     });
 
-    // Game over screen buttons
-    document.getElementById('play-again-btn').addEventListener('click', () => {
+    document.getElementById('play-again-btn').addEventListener('click', async () => {
+      showTransitionSpinner();
+      audioManager.switchToBackgroundMusic();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('game-screen');
+      hideTransitionSpinner();
       window.gameInstance = new GameState();
     });
 
-    document.getElementById('back-to-main-menu').addEventListener('click', () => {
+    document.getElementById('back-to-main-menu').addEventListener('click', async () => {
+      showTransitionSpinner();
+      audioManager.switchToBackgroundMusic();
+      await new Promise(r => setTimeout(r, 900));
       this.showScreen('start-menu');
+      hideTransitionSpinner();
     });
 
-    // Pause menu
     document.getElementById('pause-menu-btn').addEventListener('click', () => {
       this.showPauseMenu();
     });
@@ -73,15 +232,14 @@ class ScreenManager {
 
     document.getElementById('restart-game').addEventListener('click', () => {
       this.hidePauseMenu();
-      window.gameInstance = new GameState();
+      location.reload();
     });
 
     document.getElementById('quit-to-menu').addEventListener('click', () => {
       this.hidePauseMenu();
-      this.showScreen('start-menu');
+      location.reload();
     });
 
-    // Close pause menu with Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.currentScreen === 'game-screen') {
         const pauseOverlay = document.getElementById('pause-overlay');
@@ -95,14 +253,20 @@ class ScreenManager {
   }
 
   showScreen(screenId) {
-    // Hide all screens
     document.querySelectorAll('.screen').forEach(screen => {
       screen.classList.add('hidden');
     });
 
-    // Show target screen
     document.getElementById(screenId).classList.remove('hidden');
     this.currentScreen = screenId;
+
+    if (screenId === 'instructions-screen') {
+      const instructionsContent = document.querySelector('.instructions-content');
+      if (instructionsContent) instructionsContent.scrollTop = 0;
+    } else if (screenId === 'credits-screen') {
+      const creditsContent = document.querySelector('.credits-content');
+      if (creditsContent) creditsContent.scrollTop = 0;
+    }
   }
 
   showPauseMenu() {
@@ -114,14 +278,12 @@ class ScreenManager {
   }
 
   showGameOver(stats) {
-    // Update final statistics
     document.getElementById('final-score').textContent = stats.score;
     document.getElementById('final-level').textContent = stats.level;
     document.getElementById('rooms-explored').textContent = stats.roomsExplored;
     document.getElementById('monsters-defeated').textContent = stats.monstersDefeated;
     document.getElementById('puzzles-solved').textContent = stats.puzzlesSolved;
 
-    // Set performance message based on score
     const performanceTitle = document.getElementById('performance-title');
     const performanceText = document.getElementById('performance-text');
 
@@ -143,7 +305,6 @@ class ScreenManager {
   }
 }
 
-// Game State Management
 class GameState {
   constructor() {
     this.startNewGame();
@@ -166,7 +327,6 @@ class GameState {
     this.gameLog = [];
     this.visitedCells = new Set();
     
-    // Statistics tracking
     this.stats = {
       monstersDefeated: 0,
       puzzlesSolved: 0,
@@ -187,12 +347,10 @@ class GameState {
         this.grid[y][x] = this.generateRoomContent(x, y);
       }
     }
-    // Ensure starting position is empty
     this.grid[0][0] = { type: 'empty' };
   }
 
   generateRoomContent(x, y) {
-    // Don't place anything at starting position
     if (x === 0 && y === 0) return { type: 'empty' };
     
     const random = Math.random();
@@ -209,10 +367,8 @@ class GameState {
   }
 
   setupEventListeners() {
-    // Remove existing listeners to prevent duplicates
     document.removeEventListener('keydown', this.keydownHandler);
     
-    // Keyboard controls
     this.keydownHandler = (e) => {
       if (this.currentMonster || this.currentPuzzle) return;
       
@@ -226,9 +382,8 @@ class GameState {
     
     document.addEventListener('keydown', this.keydownHandler);
 
-    // Button controls
     document.querySelectorAll('.move-btn').forEach(btn => {
-      btn.replaceWith(btn.cloneNode(true)); // Remove existing listeners
+      btn.replaceWith(btn.cloneNode(true)); 
     });
     
     document.querySelectorAll('.move-btn').forEach(btn => {
@@ -245,9 +400,8 @@ class GameState {
       });
     });
 
-    // Combat actions
     document.querySelectorAll('.combat-btn').forEach(btn => {
-      btn.replaceWith(btn.cloneNode(true)); // Remove existing listeners
+      btn.replaceWith(btn.cloneNode(true));
     });
     
     document.querySelectorAll('.combat-btn').forEach(btn => {
@@ -257,7 +411,6 @@ class GameState {
       });
     });
 
-    // Puzzle submission
     const submitBtn = document.getElementById('submit-answer');
     const skipBtn = document.getElementById('skip-puzzle');
     const potionBtn = document.getElementById('use-potion');
@@ -274,21 +427,19 @@ class GameState {
       this.skipPuzzle();
     });
 
-    // Potion usage
     document.getElementById('use-potion').addEventListener('click', () => {
       this.usePotion();
     });
 
-    // Grid cell clicks for movement
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('grid-cell')) {
+        if (this.currentMonster || this.currentPuzzle) return;
         const x = parseInt(e.target.dataset.x);
         const y = parseInt(e.target.dataset.y);
         this.movePlayerTo(x, y);
       }
     });
 
-    // Enter key for puzzle answers
     const puzzleInput = document.getElementById('puzzle-answer');
     puzzleInput.replaceWith(puzzleInput.cloneNode(true));
     
@@ -312,7 +463,6 @@ class GameState {
   }
 
   movePlayerTo(x, y) {
-    // Allow movement to adjacent cells only
     const dx = Math.abs(x - this.player.x);
     const dy = Math.abs(y - this.player.y);
     
@@ -537,10 +687,8 @@ class GameState {
     }
   }
 
-  gameOver() {
+  async gameOver() {
     this.logMessage(`💀 Game Over! Your final score: ${this.player.score}`);
-    
-    // Show game over screen with statistics
     const finalStats = {
       score: this.player.score,
       level: this.player.level,
@@ -548,10 +696,13 @@ class GameState {
       monstersDefeated: this.stats.monstersDefeated,
       puzzlesSolved: this.stats.puzzlesSolved
     };
-    
+    showTransitionSpinner();
+    audioManager.switchToGameOverMusic();
+    await new Promise(r => setTimeout(r, 1200));
+    hideTransitionSpinner();
     setTimeout(() => {
       window.screenManager.showGameOver(finalStats);
-    }, 2000);
+    }, 800);
   }
 
   showCombatInterface() {
@@ -580,6 +731,7 @@ class GameState {
     this.updatePlayerStats();
     this.updateGrid();
     this.updateInventory();
+    this.updateMobilePanels();
   }
 
   updatePlayerStats() {
@@ -589,6 +741,7 @@ class GameState {
     document.getElementById('score').textContent = this.player.score;
     document.getElementById('level').textContent = this.player.level;
     document.getElementById('position').textContent = `(${this.player.x}, ${this.player.y})`;
+    this.updateMobilePanels();
   }
 
   updateGrid() {
@@ -628,6 +781,7 @@ class GameState {
 
   updateInventory() {
     document.getElementById('potions').textContent = this.player.potions;
+    this.updateMobilePanels();
   }
 
   updateMonsterDisplay() {
@@ -644,12 +798,94 @@ class GameState {
     const logContent = document.getElementById('log-content');
     const p = document.createElement('p');
     p.textContent = message;
-    logContent.appendChild(p);
-    logContent.scrollTop = logContent.scrollHeight;
+    logContent.insertBefore(p, logContent.firstChild);
+    logContent.scrollTop = 0;
 
     // Keep only last 10 messages
     while (logContent.children.length > 10) {
-      logContent.removeChild(logContent.firstChild);
+      logContent.removeChild(logContent.lastChild);
+    }
+    this.updateMobilePanels();
+  }
+
+  updateMobilePanels() {
+    if (window.innerWidth > 900) return;
+    // Left sidebar: player stats + inventory
+    const statsPanel = document.querySelector('.player-stats');
+    const inventory = document.querySelector('.inventory');
+    const leftSidebarContent = document.getElementById('mobile-left-sidebar-content');
+    if (statsPanel && inventory && leftSidebarContent) {
+      leftSidebarContent.innerHTML = statsPanel.outerHTML + inventory.outerHTML;
+      // Re-attach use potion button event
+      const potionBtn = leftSidebarContent.querySelector('#use-potion');
+      if (potionBtn) {
+        potionBtn.addEventListener('click', () => this.usePotion());
+      }
+    }
+    // Right sidebar: game log
+    const logPanel = document.getElementById('game-log');
+    const rightSidebarContent = document.getElementById('mobile-right-sidebar-content');
+    if (logPanel && rightSidebarContent) {
+      rightSidebarContent.innerHTML = logPanel.outerHTML;
+    }
+    // Bottom panel: controls and combat/quiz
+    const controls = document.querySelector('.controls');
+    const combat = document.getElementById('combat-interface');
+    const puzzle = document.getElementById('puzzle-interface');
+    const bottomControls = document.getElementById('mobile-bottom-controls');
+    const bottomCombat = document.getElementById('mobile-bottom-combat');
+    if (controls && bottomControls) {
+      bottomControls.innerHTML = controls.outerHTML;
+    }
+    if (bottomCombat) {
+      if (combat && !combat.classList.contains('hidden')) {
+        bottomCombat.innerHTML = combat.outerHTML;
+      } else if (puzzle && !puzzle.classList.contains('hidden')) {
+        bottomCombat.innerHTML = puzzle.outerHTML;
+      } else {
+        bottomCombat.innerHTML = '';
+      }
+    }
+    this.attachMobilePanelListeners();
+  }
+
+  attachMobilePanelListeners() {
+    // Movement controls
+    document.querySelectorAll('#mobile-bottom-controls .move-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (this.currentMonster || this.currentPuzzle) return;
+        const direction = btn.dataset.direction;
+        switch(direction) {
+          case 'up': this.movePlayer(0, -1); break;
+          case 'down': this.movePlayer(0, 1); break;
+          case 'left': this.movePlayer(-1, 0); break;
+          case 'right': this.movePlayer(1, 0); break;
+        }
+      });
+    });
+    // Combat actions
+    document.querySelectorAll('#mobile-bottom-combat .combat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        this.handleCombatAction(action);
+      });
+    });
+    // Puzzle actions
+    const submitBtn = document.querySelector('#mobile-bottom-combat #submit-answer');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => this.submitPuzzleAnswer());
+    }
+    const skipBtn = document.querySelector('#mobile-bottom-combat #skip-puzzle');
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => this.skipPuzzle());
+    }
+    const puzzleInput = document.querySelector('#mobile-bottom-combat #puzzle-answer');
+    if (puzzleInput) {
+      puzzleInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.submitPuzzleAnswer();
+        }
+      });
     }
   }
 }
@@ -752,4 +988,91 @@ function generateTreasure() {
 // Initialize application when page loads
 document.addEventListener('DOMContentLoaded', () => {
   window.screenManager = new ScreenManager();
+  
+  // Loading screen animation
+  const loadingScreen = document.getElementById('loading-screen');
+  const startMenu = document.getElementById('start-menu');
+  
+  // First load the audio
+  audioManager.init().then(() => {
+    // Then show the loading animation
+    setTimeout(() => {
+      if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          // Show main menu (if hidden)
+          if (startMenu) startMenu.classList.remove('hidden');
+        }, 700); // match CSS transition
+      }
+    }, 2800);
+  }).catch(error => {
+    console.error('Failed to load audio:', error);
+    // Still show the menu even if audio fails
+    if (loadingScreen) {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        if (startMenu) startMenu.classList.remove('hidden');
+      }, 700);
+    }
+  });
+
+  // Sidebar toggle logic for mobile/tablet
+  const leftSidebar = document.getElementById('mobile-left-sidebar');
+  const rightSidebar = document.getElementById('mobile-right-sidebar');
+  const leftBtn = document.getElementById('toggle-left-sidebar');
+  const rightBtn = document.getElementById('toggle-right-sidebar');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+
+  function closeSidebars() {
+    leftSidebar.classList.remove('active');
+    leftSidebar.classList.add('hidden');
+    rightSidebar.classList.remove('active');
+    rightSidebar.classList.add('hidden');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+  }
+
+  function openSidebar(side) {
+    closeSidebars();
+    if (side === 'left') {
+      leftSidebar.classList.add('active');
+      leftSidebar.classList.remove('hidden');
+    } else if (side === 'right') {
+      rightSidebar.classList.add('active');
+      rightSidebar.classList.remove('hidden');
+    }
+    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+  }
+
+  if (leftBtn && leftSidebar) {
+    leftBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (leftSidebar.classList.contains('active')) {
+        closeSidebars();
+      } else {
+        openSidebar('left');
+      }
+    });
+  }
+  if (rightBtn && rightSidebar) {
+    rightBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (rightSidebar.classList.contains('active')) {
+        closeSidebars();
+      } else {
+        openSidebar('right');
+      }
+    });
+  }
+  // Close sidebars when clicking outside or on backdrop
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth > 900) return;
+    if (!e.target.closest('.mobile-sidebar') && !e.target.classList.contains('sidebar-toggle')) {
+      closeSidebars();
+    }
+  });
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', closeSidebars);
+  }
 });
